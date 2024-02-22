@@ -3,6 +3,7 @@ const prisma = require("../config/db");
 const insertStudent = async (studentData) => {
   const student = await prisma.student.create({
     data: {
+      user_id: studentData.user_id,
       name: studentData.name,
       kelas: studentData.kelas,
       created_at: studentData.created_at,

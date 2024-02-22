@@ -10,10 +10,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Student {
-  id String @id @unique @default(uuid())
-  name String
-  kelas String
+// prisma/schema.prisma
+
+enum Role {
+  SISWA
+  GURU
+}
+
+enum statuAttendance {
+  HADIR
+  TIDAK_HADIR
+  IZIN
+  TERLAMBAT
+}
+
+model User {
+  user_id    String   @id @unique @default(uuid())
+  username   String   @unique
+  password   String
+  role       Role
+  student    Student?
+  teacher    Teacher?
+  absensi    Absensi?
   created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Student {
+  id         String   @id @unique @default(uuid())
+  user_id    String   @unique
+  name       String
+  kelas      String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [user_id], references: [user_id])
+
+  @@map("students")
+}
+
+model Teacher {
+  id         String   @id @default(uuid())
+  user_id    String   @unique
+  name       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [user_id], references: [user_id])
+
+  @@map("teachers")
+}
+
+model Absensi {
+  id           String          @id @unique @default(uuid())
+  user_id      String          @unique
+  user         User            @relation(fields: [user_id], references: [user_id])
+  absensi_date DateTime
+  status       statuAttendance
+  face String
+  created_at   DateTime        @default(now())
+  updated_at   DateTime        @updatedAt
 }
