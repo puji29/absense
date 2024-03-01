@@ -1,4 +1,4 @@
-const express = require("express");
+
 const prisma = require("../config/db");
 const {
   createUser,
@@ -8,9 +8,8 @@ const {
   deletUserById,
 } = require("../usecase/user_usecase");
 
-const router = express.Router();
 
-router.post("/user/register", async (req, res) => {
+const addUserHandler = async (req, res) => {
   try {
     const newUserData = req.body;
     const user = await createUser(newUserData);
@@ -25,15 +24,15 @@ router.post("/user/register", async (req, res) => {
       message: error.message,
     });
   }
-});
+};
 
-router.get("/users", async (req, res) => {
+const findAllHandler = async (req, res) => {
   const users = await getAllUsers();
 
   res.send(users);
-});
+};
 
-router.get("/user/:id", async (req, res) => {
+const findUserByIdHandler = async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await getUserById(userId);
@@ -44,9 +43,9 @@ router.get("/user/:id", async (req, res) => {
   } catch (error) {
     res.status(400).send(error.message);
   }
-});
+};
 
-router.put("/user/:id", async (req, res) => {
+const updateUserHandler = async (req, res) => {
   const userId = req.params.id;
   const userData = req.body;
 
@@ -59,9 +58,9 @@ router.put("/user/:id", async (req, res) => {
     data: user,
     message: "updated user succesfully",
   });
-});
+};
 
-router.delete("/user/:id", async (req, res) => {
+const deleteUserHandler = async (req, res) => {
   try {
     const userId = req.params.id;
     await deletUserById(userId);
@@ -70,6 +69,12 @@ router.delete("/user/:id", async (req, res) => {
   } catch (error) {
     res.status(400).send("failed deleted user", error.message);
   }
-});
+};
 
-module.exports = router;
+module.exports = {
+  addUserHandler,
+  findAllHandler,
+  findUserByIdHandler,
+  updateUserHandler,
+  deleteUserHandler
+}
